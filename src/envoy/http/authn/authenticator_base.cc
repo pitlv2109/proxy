@@ -54,6 +54,19 @@ bool AuthenticatorBase::validateX509(const iaapi::MutualTls& mtls,
     // It's wrong if connection does not exist.
     return false;
   }
+  // If Alts connection is available, write peer to metadata.
+  if (connection->alts() != nullptr) {
+    std::vector<std::string> peers_service_accounts = connection->alts()->peerServiceAccounts();
+    for (size_t i = 0; i < peers_service_accounts.size(); i++) {
+      // Write to payload, similar to Util::GetPrincipal
+      std::string* principal = payload->mutable_x509()->mutable_user();
+      *principal = peers_service_accounts[i];
+    }
+
+    // Indicate the process has been done and it's good.
+    return true;
+  }
+
   // Always try to get principal and set to output if available.
   const bool has_user =
       connection->ssl() != nullptr &&

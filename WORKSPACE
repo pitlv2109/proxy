@@ -16,7 +16,8 @@
 #
 
 # http_archive is not a native function since bazel 0.19
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+# load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load(
     "//:repositories.bzl",
     "googletest_repositories",
@@ -37,25 +38,31 @@ bind(
 # Determine SHA256 `wget https://github.com/envoyproxy/envoy/archive/COMMIT.tar.gz && sha256sum COMMIT.tar.gz`
 # envoy commit date  05/16/2019
 # bazel version: 0.25.0
-ENVOY_SHA = "829b905ca0fdc85233c3969247e53a62a52ac627"
+# ENVOY_SHA = "228a963d1308eb1b06e2e8b7387e0bfa72fe77ea"
 
-ENVOY_SHA256 = "a5d4bae1dc4495dfa50700f574ae4106715d720dee288b72d00267efcff26a83"
+# ENVOY_SHA256 = "6480ed4a526c504dc7c7c6784c7f143183a5481d944b999a45b7a7fb925d8e09"
 
-LOCAL_ENVOY_PROJECT = "/PATH/TO/ENVOY"
+# LOCAL_ENVOY_PROJECT = "/usr/local/google/home/philliple/go/src/istio.io/envoy"
 
-http_archive(
+# http_archive(
+#     name = "envoy",
+#     sha256 = ENVOY_SHA256,
+#     strip_prefix = "envoy-" + ENVOY_SHA,
+#     url = "https://github.com/envoyproxy/envoy/archive/" + ENVOY_SHA + ".tar.gz",
+# )
+
+git_repository(
     name = "envoy",
-    sha256 = ENVOY_SHA256,
-    strip_prefix = "envoy-" + ENVOY_SHA,
-    url = "https://github.com/envoyproxy/envoy/archive/" + ENVOY_SHA + ".tar.gz",
+    branch = "istio-alts",
+    remote = "https://github.com/pitlv2109/envoy.git",
 )
 
 # TODO(silentdai) Use bazel args to select envoy between local or http
 # Uncomment below and comment above http_archive to depends on local envoy.
-#local_repository(
+# local_repository(
 #     name = "envoy",
 #     path = LOCAL_ENVOY_PROJECT,
-#)
+# )
 
 load("@envoy//bazel:api_repositories.bzl", "envoy_api_dependencies")
 
